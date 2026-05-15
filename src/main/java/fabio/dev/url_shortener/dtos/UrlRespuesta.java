@@ -1,0 +1,11 @@
+package fabio.dev.url_shortener.dtos;
+
+public record UrlRespuesta(
+        Integer idUrl,
+        String originalUrl,
+        String slug,
+        String fechaRegistro,
+        String fechaModificacion,
+        Integer vecesAccedidio
+) {
+}
