@@ -2,8 +2,10 @@ package fabio.dev.url_shortener.servicios;
 
 import fabio.dev.url_shortener.dtos.ActualizarRespuesta;
 import fabio.dev.url_shortener.dtos.UrlRespuesta;
+import fabio.dev.url_shortener.excepciones.InvalidInputException;
 import fabio.dev.url_shortener.modelos.Url;
 import fabio.dev.url_shortener.repositorios.UrlRepositorio;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,15 +29,15 @@ public class UrlServicio {
     @Transactional
     public UrlRespuesta crearShortUrl(String url) {
 
-        logger.info("Creando url para : {}", url);
+        logger.info("Creando slog para url: {}", url);
 
 
         if (url == null || url.isEmpty()){
-            throw new RuntimeException("El url no puede ser vacio");
+            throw new InvalidInputException("URL vacio");
         }
 
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            throw new RuntimeException("Ingeresa un url valido");
+            throw new InvalidInputException("URL no valido por falta de certificado SSL");
         }
 
         Url shortUrl = new Url();
@@ -46,7 +48,7 @@ public class UrlServicio {
 
         urlRepositorio.save(shortUrl);
 
-        logger.info("Url acortada y guardada exitosamente");
+        logger.info("Url procesada y guardada exitosamente");
 
         return new UrlRespuesta(
                 shortUrl.getId(),
@@ -83,11 +85,11 @@ public class UrlServicio {
         logger.info("Actualizando url : {}", id);
 
         if (id == null || id < 0) {
-            throw new RuntimeException("El id debe ser mayor a cero");
+            throw new InvalidInputException("El id debe ser mayor a cero");
         }
 
         if (actualizarRespuesta == null) {
-            throw new RuntimeException("La solicitud no puede ser nula");
+            throw new InvalidInputException("La solicitud no puede estar vacia");
         }
 
         Url url = urlRepositorio.findById(id).orElseThrow( () -> new RuntimeException("El url no existe"));
@@ -124,11 +126,11 @@ public class UrlServicio {
         logger.info("Eliminando url : {}", id);
 
         if (id == null || id < 0) {
-            throw new RuntimeException("El id debe ser mayor a cero");
+            throw new InvalidInputException("El id debe ser mayor a cero");
         }
 
         if (!urlRepositorio.existsById(id)) {
-           throw new RuntimeException("El url no existe");
+           throw new EntityNotFoundException("El url no existe");
         }
 
         urlRepositorio.deleteById(id);
