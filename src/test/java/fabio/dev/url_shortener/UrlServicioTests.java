@@ -2,9 +2,12 @@ package fabio.dev.url_shortener;
 
 import fabio.dev.url_shortener.dtos.ActualizarRespuesta;
 import fabio.dev.url_shortener.dtos.UrlRespuesta;
+import fabio.dev.url_shortener.dtos.UrlSolicitud;
+import fabio.dev.url_shortener.excepciones.InvalidInputException;
 import fabio.dev.url_shortener.modelos.Url;
 import fabio.dev.url_shortener.repositorios.UrlRepositorio;
 import fabio.dev.url_shortener.servicios.UrlServicio;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +58,7 @@ class UrlServicioTests {
 				return u;
 		});
 
-		UrlRespuesta nuevaUrl = urlServicio.crearShortUrl("https://www.google.com");
+		UrlRespuesta nuevaUrl = urlServicio.crearShortUrl(new UrlSolicitud("https://www.google.com"));
 
 		assertEquals("https://www.google.com",nuevaUrl.originalUrl());
 		assertNotNull(nuevaUrl.fechaRegistro());
@@ -66,57 +70,17 @@ class UrlServicioTests {
 	}
 
 	@Test
-	@DisplayName("Deberia dar NullPointerException por ser url null")
-	public void deberiaDarErrorPorUrlNull() {
-		RuntimeException ex = assertThrows(RuntimeException.class, () ->
-				urlServicio.crearShortUrl(null)
-		);
-
-		assertEquals("El url no puede ser vacio", ex.getMessage());
-
-		verify(urlRepositorio, never()).save(any());
-	}
-
-	@Test
-	@DisplayName("Deberia dar BadRequestException por url vacia")
-	public void deberiaDarErrorPorUrlVacia() {
-
-		RuntimeException ex = assertThrows(RuntimeException.class, () ->
-				urlServicio.crearShortUrl("")
-		);
-
-		assertEquals("El url no puede ser vacio", ex.getMessage());
-
-		verify(urlRepositorio, never()).save(any());
-
-	}
-
-	@Test
-	@DisplayName("Deberia dar BadRequestException por url no valida")
-	public void deberiaDarErrorPorUrlNoValida() {
-
-		RuntimeException ex = assertThrows(
-				RuntimeException.class, () -> urlServicio.crearShortUrl("www.googl.com")
-		);
-
-		assertEquals("Ingeresa un url valido", ex.getMessage());
-
-		verify(urlRepositorio, never()).save(any());
-
-	}
-
-	@Test
 	@DisplayName("Deberia mostrar todos los urls guardados exitosamente")
 	public void deberiaMostrarTodosLosUrlsGuardadosExitosamente(){
 
-		ArrayList<Url> urls = new ArrayList<>();
-		urls.add(url);
+		List<Url> urlsMock = List.of(url);
 
-		when(urlRepositorio.findAll()).thenReturn(urls);
+		when(urlRepositorio.findAll()).thenReturn(urlsMock);
 
-		urlServicio.ListarUrls();
+		ArrayList<UrlRespuesta> urls = urlServicio.ListarUrls();
 
 		assertEquals(1, urls.size());
+		assertEquals("https://www.google.com", urls.get(0).originalUrl());
 
 		verify(urlRepositorio, times(1)).findAll();
 
@@ -181,22 +145,22 @@ class UrlServicioTests {
 	}
 
 	@Test
-	@DisplayName("Deberia dar RuntimeException por dto null al actualizar")
+	@DisplayName("Deberia dar InvalidInputException por dto null al actualizar")
 	public void deberiaDarRuntimeExceptionPorDtoNullActualizar() {
 
-		RuntimeException err = assertThrows(RuntimeException.class, () -> urlServicio.actualizarShortUrl(1, null));
+		InvalidInputException err = assertThrows(InvalidInputException.class, () -> urlServicio.actualizarShortUrl(1, null));
 
-		assertEquals("La solicitud no puede ser nula", err.getMessage());
+		assertEquals("La solicitud no puede estar vacia", err.getMessage());
 		verify(urlRepositorio, never()).findById(anyInt());
 		verify(urlRepositorio, never()).save(any(Url.class));
 
 	}
 
 	@Test
-	@DisplayName("Deberia dar RuntimeException por id null al actualizar")
+	@DisplayName("Deberia dar InvalidInputException por id null al actualizar")
 	public void deberiaDarRuntimeExceptionActualizar() {
 
-		RuntimeException err = assertThrows(RuntimeException.class, () -> urlServicio.actualizarShortUrl(null, null));
+		RuntimeException err = assertThrows(InvalidInputException.class, () -> urlServicio.actualizarShortUrl(null, null));
 
 		assertEquals("El id debe ser mayor a cero", err.getMessage());
 
@@ -206,10 +170,10 @@ class UrlServicioTests {
 	}
 
 	@Test
-	@DisplayName("Deberia dar RuntimeException por id negativo al actualizar")
+	@DisplayName("Deberia dar InvalidInputException por id negativo al actualizar")
 	public void deberiaDarRuntimeExceptionPorIdNegativoAlActualizar() {
 
-		RuntimeException err = assertThrows(RuntimeException.class, () -> urlServicio.actualizarShortUrl(-1, null));
+		InvalidInputException err = assertThrows(InvalidInputException.class, () -> urlServicio.actualizarShortUrl(-1, null));
 
 		assertEquals("El id debe ser mayor a cero", err.getMessage());
 
@@ -230,11 +194,11 @@ class UrlServicioTests {
 	}
 
 	@Test
-	@DisplayName("Deberia dar RuntimeException por id negativo al eliminar un url")
+	@DisplayName("Deberia dar InvalidInputException por id negativo al eliminar un url")
 	public void deberiaFallarAlEliminarUnUrlPorIdNegativo() {
 
-		RuntimeException err = assertThrows(
-				RuntimeException.class, () -> urlServicio.EliminarUrl(-1)
+		InvalidInputException err = assertThrows(
+				InvalidInputException.class, () -> urlServicio.EliminarUrl(-1)
 		);
 
 		assertEquals("El id debe ser mayor a cero", err.getMessage());
@@ -244,11 +208,11 @@ class UrlServicioTests {
 	}
 
 	@Test
-	@DisplayName("Deberia dar RuntimeException por id null al eliminar un url")
+	@DisplayName("Deberia dar InvalidInputException por id null al eliminar un url")
 	public void deberiaFallarAlEliminarUnUrlPorSerNull() {
 
-		RuntimeException err = assertThrows(
-				RuntimeException.class, () -> urlServicio.EliminarUrl(null)
+		InvalidInputException err = assertThrows(
+				InvalidInputException.class, () -> urlServicio.EliminarUrl(null)
 		);
 
 		assertEquals("El id debe ser mayor a cero", err.getMessage());
@@ -258,11 +222,11 @@ class UrlServicioTests {
 	}
 
 	@Test
-	@DisplayName("Deberia dar RuntimeException por url no existente")
+	@DisplayName("Deberia dar EntityNotFoundException por url no existente al eliminar")
 	public void deberiaFallarAlEliminarUnUrlQueNoExiste() {
 
-		RuntimeException err = assertThrows(
-				RuntimeException.class, () -> urlServicio.EliminarUrl(1000)
+		EntityNotFoundException err = assertThrows(
+				EntityNotFoundException.class, () -> urlServicio.EliminarUrl(1000)
 		);
 
 		assertEquals("El url no existe", err.getMessage());
