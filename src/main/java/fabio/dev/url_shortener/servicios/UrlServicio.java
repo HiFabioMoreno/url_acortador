@@ -2,11 +2,14 @@ package fabio.dev.url_shortener.servicios;
 
 import fabio.dev.url_shortener.dtos.ActualizarRespuesta;
 import fabio.dev.url_shortener.dtos.UrlRespuesta;
+import fabio.dev.url_shortener.dtos.UrlSolicitud;
 import fabio.dev.url_shortener.excepciones.InvalidInputException;
 import fabio.dev.url_shortener.modelos.Url;
 import fabio.dev.url_shortener.repositorios.UrlRepositorio;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,21 +30,12 @@ public class UrlServicio {
     }
 
     @Transactional
-    public UrlRespuesta crearShortUrl(String url) {
+    public UrlRespuesta crearShortUrl(@NonNull UrlSolicitud urlSolicitud) {
 
-        logger.info("Creando slog para url: {}", url);
-
-
-        if (url == null || url.isEmpty()){
-            throw new InvalidInputException("URL vacio");
-        }
-
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            throw new InvalidInputException("URL no valido por falta de certificado SSL");
-        }
+        logger.info("Creando slog para url: {}", urlSolicitud.url());
 
         Url shortUrl = new Url();
-        shortUrl.setOriginalUrl(url);
+        shortUrl.setOriginalUrl(urlSolicitud.url());
         shortUrl.setSlug(GeneradorUrl());
         shortUrl.setFechaModificacion(shortUrl.getFechaRegistro());
         shortUrl.setVecesAccedido(0);
