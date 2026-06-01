@@ -2,9 +2,11 @@ package fabio.dev.url_shortener.controladores;
 
 import fabio.dev.url_shortener.dtos.ActualizarRespuesta;
 import fabio.dev.url_shortener.dtos.UrlRespuesta;
+import fabio.dev.url_shortener.dtos.UrlSolicitud;
 import fabio.dev.url_shortener.servicios.UrlServicio;
+import jakarta.persistence.Temporal;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/acortador")
+@ControllerAdvice
 @Validated
 public class Controlador {
 
@@ -29,8 +32,8 @@ public class Controlador {
     }
 
     @PostMapping("/")
-    public ResponseEntity<UrlRespuesta> registrarUrl(@RequestBody String url) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(urlServicio.crearShortUrl(url));
+    public ResponseEntity<UrlRespuesta> registrarUrl(@Valid @RequestBody UrlSolicitud urlSolicitud) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(urlServicio.crearShortUrl(urlSolicitud));
     }
 
     @PatchMapping("/{id}/")
