@@ -2,9 +2,14 @@ package fabio.dev.url_shortener.servicios;
 
 import fabio.dev.url_shortener.dtos.ActualizarRespuesta;
 import fabio.dev.url_shortener.dtos.UrlRespuesta;
+import fabio.dev.url_shortener.dtos.UrlSolicitud;
+import fabio.dev.url_shortener.excepciones.InvalidInputException;
 import fabio.dev.url_shortener.modelos.Url;
 import fabio.dev.url_shortener.repositorios.UrlRepositorio;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,28 +30,19 @@ public class UrlServicio {
     }
 
     @Transactional
-    public UrlRespuesta crearShortUrl(String url) {
+    public UrlRespuesta crearShortUrl(@NonNull UrlSolicitud urlSolicitud) {
 
-        logger.info("Creando url para : {}", url);
-
-
-        if (url == null || url.isEmpty()){
-            throw new RuntimeException("El url no puede ser vacio");
-        }
-
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            throw new RuntimeException("Ingeresa un url valido");
-        }
+        logger.info("Creando slog para url: {}", urlSolicitud.url());
 
         Url shortUrl = new Url();
-        shortUrl.setOriginalUrl(url);
+        shortUrl.setOriginalUrl(urlSolicitud.url());
         shortUrl.setSlug(GeneradorUrl());
         shortUrl.setFechaModificacion(shortUrl.getFechaRegistro());
         shortUrl.setVecesAccedido(0);
 
         urlRepositorio.save(shortUrl);
 
-        logger.info("Url acortada y guardada exitosamente");
+        logger.info("Url procesada y guardada exitosamente");
 
         return new UrlRespuesta(
                 shortUrl.getId(),
@@ -83,11 +79,11 @@ public class UrlServicio {
         logger.info("Actualizando url : {}", id);
 
         if (id == null || id < 0) {
-            throw new RuntimeException("El id debe ser mayor a cero");
+            throw new InvalidInputException("El id debe ser mayor a cero");
         }
 
         if (actualizarRespuesta == null) {
-            throw new RuntimeException("La solicitud no puede ser nula");
+            throw new InvalidInputException("La solicitud no puede estar vacia");
         }
 
         Url url = urlRepositorio.findById(id).orElseThrow( () -> new RuntimeException("El url no existe"));
@@ -124,11 +120,11 @@ public class UrlServicio {
         logger.info("Eliminando url : {}", id);
 
         if (id == null || id < 0) {
-            throw new RuntimeException("El id debe ser mayor a cero");
+            throw new InvalidInputException("El id debe ser mayor a cero");
         }
 
         if (!urlRepositorio.existsById(id)) {
-           throw new RuntimeException("El url no existe");
+           throw new EntityNotFoundException("El url no existe");
         }
 
         urlRepositorio.deleteById(id);
