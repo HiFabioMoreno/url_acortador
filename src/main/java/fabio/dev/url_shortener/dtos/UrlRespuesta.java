@@ -6,6 +6,6 @@ public record UrlRespuesta(
         String slug,
         String fechaRegistro,
         String fechaModificacion,
-        Integer vecesAccedidio
+        Integer vecesAccedido
 ) {
 }
