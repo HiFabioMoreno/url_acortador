@@ -7,6 +7,7 @@ import fabio.dev.url_shortener.servicios.UrlServicio;
 import jakarta.persistence.Temporal;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/acortador")
-@ControllerAdvice
 @Validated
 public class Controlador {
 
@@ -37,12 +37,12 @@ public class Controlador {
     }
 
     @PatchMapping("/{id}/")
-    public ResponseEntity<UrlRespuesta> actualizarUrl(@PathVariable Integer id, @Valid @RequestBody ActualizarRespuesta dto) {
+    public ResponseEntity<UrlRespuesta> actualizarUrl(@PathVariable @Positive Integer id, @Valid @RequestBody ActualizarRespuesta dto) {
         return ResponseEntity.ok(urlServicio.actualizarShortUrl(id,dto));
     }
 
     @DeleteMapping("/{id}/")
-    public ResponseEntity<Void> actualizarUrl(@PathVariable Integer id) {
+    public ResponseEntity<Void> eliminarUrl(@PathVariable @Positive Integer id) {
         urlServicio.EliminarUrl(id);
         return ResponseEntity.noContent().build();
     }

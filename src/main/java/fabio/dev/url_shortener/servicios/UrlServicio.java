@@ -14,10 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import static fabio.dev.url_shortener.modelos.Url.GeneradorUrl;
+import static fabio.dev.url_shortener.modelos.Url.GenerarTimestamp;
 
 @Service
 public class UrlServicio {
@@ -37,7 +40,7 @@ public class UrlServicio {
         Url shortUrl = new Url();
         shortUrl.setOriginalUrl(urlSolicitud.url());
         shortUrl.setSlug(GeneradorUrl());
-        shortUrl.setFechaModificacion(shortUrl.getFechaRegistro());
+        shortUrl.setFechaModificacion(GenerarTimestamp());
         shortUrl.setVecesAccedido(0);
 
         urlRepositorio.save(shortUrl);
@@ -54,6 +57,7 @@ public class UrlServicio {
     }
 
     public ArrayList<UrlRespuesta> ListarUrls() {
+
         logger.info("Listando todos los urls");
 
         List<Url> urls = urlRepositorio.findAll();
@@ -76,11 +80,8 @@ public class UrlServicio {
     @Transactional
     public UrlRespuesta actualizarShortUrl(Integer id,ActualizarRespuesta actualizarRespuesta)  {
 
-        logger.info("Actualizando url : {}", id);
+        logger.info("Actualizando url con id : {}", id);
 
-        if (id == null || id < 0) {
-            throw new InvalidInputException("El id debe ser mayor a cero");
-        }
 
         if (actualizarRespuesta == null) {
             throw new InvalidInputException("La solicitud no puede estar vacia");
@@ -101,8 +102,6 @@ public class UrlServicio {
             url.setVecesAccedido(vecesAccedido + 1);
         }
 
-        urlRepositorio.save(url);
-
         logger.info("Url actualizada exitosamente");
 
         return new UrlRespuesta(
@@ -117,11 +116,7 @@ public class UrlServicio {
 
     @Transactional
     public void EliminarUrl(Integer id){
-        logger.info("Eliminando url : {}", id);
-
-        if (id == null || id < 0) {
-            throw new InvalidInputException("El id debe ser mayor a cero");
-        }
+        logger.info("Eliminando url con id: {}", id);
 
         if (!urlRepositorio.existsById(id)) {
            throw new EntityNotFoundException("El url no existe");
