@@ -63,7 +63,7 @@ class UrlServicioTests {
 		assertEquals("https://www.google.com",nuevaUrl.originalUrl());
 		assertNotNull(nuevaUrl.fechaRegistro());
 		assertNotNull(nuevaUrl.slug());
-		assertEquals(0, nuevaUrl.vecesAccedidio());
+		assertEquals(0, nuevaUrl.vecesAccedido());
 
 		verify(urlRepositorio, times(1)).save(any(Url.class));
 
@@ -97,7 +97,7 @@ class UrlServicioTests {
 				1, new ActualizarRespuesta(null, false, true)
 		);
 
-		assertEquals(1,urlRespuesta.vecesAccedidio());
+		assertEquals(1,urlRespuesta.vecesAccedido());
 		assertEquals("https://www.google.com",urlRespuesta.originalUrl());
 
 		verify(urlRepositorio, times(1)).findById(anyInt());
@@ -116,7 +116,7 @@ class UrlServicioTests {
 				1, new ActualizarRespuesta("https://www.youtube.com/", false, false)
 		);
 
-		assertEquals(0,urlRespuesta.vecesAccedidio());
+		assertEquals(0,urlRespuesta.vecesAccedido());
 		assertEquals("https://www.youtube.com/",urlRespuesta.originalUrl());
 
 		verify(urlRepositorio, times(1)).findById(anyInt());
@@ -135,7 +135,7 @@ class UrlServicioTests {
 				1, new ActualizarRespuesta(null, true, false)
 		);
 
-		assertEquals(0,urlRespuesta.vecesAccedidio());
+		assertEquals(0,urlRespuesta.vecesAccedido());
 		assertEquals("https://www.google.com",urlRespuesta.originalUrl());
 		assertNotEquals("uzdkr8", urlRespuesta.slug());
 
