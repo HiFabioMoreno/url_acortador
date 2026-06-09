@@ -2,7 +2,7 @@ package fabio.dev.url_shortener.modelos;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -32,26 +32,24 @@ public class Url {
     @Column(name = "fechaModificacion", nullable = false)
     private String fechaModificacion;
 
-    @Positive(message = "El contador de accesos no puede ser negativo")
+    @PositiveOrZero(message = "El contador de accesos no puede ser negativo")
     private Integer vecesAccedido;
 
     @PrePersist
     void onCreate() {
-
-        String str = "04-08-2026 12:30";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
-
-        this.fechaRegistro = dateTime.toString();
+        this.fechaRegistro = GenerarTimestamp();
     }
 
     @PreUpdate
     void onUpdate() {
-        String str = "04-08-2026 12:30";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
+        this.fechaModificacion = GenerarTimestamp();
+    }
 
-        this.fechaRegistro = dateTime.toString();
+    public static String GenerarTimestamp(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String fechaFormateada = LocalDateTime.now().format(formatter);
+
+        return fechaFormateada;
     }
 
     public static String GeneradorUrl(){
