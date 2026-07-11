@@ -56,6 +56,17 @@ public class UrlServicio {
                 shortUrl.getVecesAccedido());
     }
 
+    public String buscarUrl(@NonNull String slug) {
+
+        logger.info("Buscando slug: {}", slug);
+
+        Url urlOrigin= urlRepositorio.findBySlug(slug).orElseThrow(EntityNotFoundException::new);
+
+        logger.info("Url encontrada exitosamente");
+
+        return  urlOrigin.getOriginalUrl().toString();
+    }
+
     public ArrayList<UrlRespuesta> ListarUrls() {
 
         logger.info("Listando todos los urls");
