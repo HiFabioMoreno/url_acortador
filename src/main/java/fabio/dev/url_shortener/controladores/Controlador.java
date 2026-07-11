@@ -8,6 +8,7 @@ import jakarta.persistence.Temporal;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -45,6 +46,17 @@ public class Controlador {
     public ResponseEntity<Void> eliminarUrl(@PathVariable @Positive Integer id) {
         urlServicio.EliminarUrl(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{slug}/")
+    public ResponseEntity<Void> redericcionar(@PathVariable String slug) {
+
+        String urlOriginal = urlServicio.buscarUrl(slug);
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, urlOriginal)
+                .build();
     }
 
 }

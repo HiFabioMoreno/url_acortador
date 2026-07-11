@@ -1,5 +1,6 @@
 package fabio.dev.url_shortener;
 
+import com.jayway.jsonpath.JsonPath;
 import fabio.dev.url_shortener.dtos.ActualizarRespuesta;
 import fabio.dev.url_shortener.dtos.UrlSolicitud;
 import fabio.dev.url_shortener.modelos.Url;
@@ -13,12 +14,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -68,6 +70,26 @@ public class ControladorIntegracionTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].originalUrl").value("https://ejemplo.com"));
+    }
+
+    @Test
+    @DisplayName("GET /acortador/{slug} - debe de regresar un url encontrado por su slug")
+    void  debe_de_regresar_un_url_encontrado_por_su_slug() throws Exception {
+
+        Url url = new Url();
+        url.setOriginalUrl("https://ejemplo.com/");
+        url.setSlug("abXzy");
+        url.setFechaRegistro(Url.GenerarTimestamp());
+        url.setFechaModificacion(Url.GenerarTimestamp());
+        url.setVecesAccedido(0);
+        urlRepositorio.save(url);
+
+        mockMvc.perform(get("/acortador/" + url.getSlug() + "/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(url)))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", "https://ejemplo.com/"));
+
     }
 
     @Test
@@ -152,20 +174,31 @@ public class ControladorIntegracionTests {
         UrlSolicitud solicitud = new UrlSolicitud("https://www.google.com");
         ActualizarRespuesta actualizarUrl = new ActualizarRespuesta("https://www.instagram.com/",false,true);
 
-        mockMvc.perform(post("/acortador/")
+        MvcResult result = mockMvc.perform(post("/acortador/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(solicitud)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idUrl").exists())
                 .andExpect(jsonPath("$.originalUrl").value("https://www.google.com"))
                 .andExpect(jsonPath("$.slug").exists())
-                .andExpect(jsonPath("$.vecesAccedido").value(0));
+                .andExpect(jsonPath("$.vecesAccedido").value(0))
+                .andReturn();
+
+        String slugAEncontrar = JsonPath.read(
+                result.getResponse().getContentAsString(),
+                "$.slug"
+        );
 
         mockMvc.perform(get("/acortador/")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].originalUrl").value("https://www.google.com"));
+
+        mockMvc.perform(get("/acortador/"+ slugAEncontrar +"/")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", "https://www.google.com"));
 
         mockMvc.perform(patch("/acortador/1/")
                 .contentType(MediaType.APPLICATION_JSON)

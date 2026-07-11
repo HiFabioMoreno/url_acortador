@@ -70,6 +70,18 @@ class UrlServicioTests {
 	}
 
 	@Test
+	@DisplayName("Deberia encontrar un url por su slug relacionado")
+	public void deberiaEncontrarElUrlOginalDeUnSlug()  {
+
+		when(urlRepositorio.findBySlug("uzdkr8")).thenReturn(Optional.of(url));
+
+		String slug = urlServicio.buscarUrl(url.getSlug());
+		assertEquals("https://www.google.com", slug);
+
+		verify(urlRepositorio, times(1)).findBySlug(anyString());
+	}
+
+	@Test
 	@DisplayName("Deberia mostrar todos los urls guardados exitosamente")
 	public void deberiaMostrarTodosLosUrlsGuardadosExitosamente(){
 
