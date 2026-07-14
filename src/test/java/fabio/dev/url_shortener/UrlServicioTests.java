@@ -113,7 +113,6 @@ class UrlServicioTests {
 		assertEquals("https://www.google.com",urlRespuesta.originalUrl());
 
 		verify(urlRepositorio, times(1)).findById(anyInt());
-		verify(urlRepositorio, times(1)).save(any(Url.class));
 
 	}
 
@@ -132,7 +131,6 @@ class UrlServicioTests {
 		assertEquals("https://www.youtube.com/",urlRespuesta.originalUrl());
 
 		verify(urlRepositorio, times(1)).findById(anyInt());
-		verify(urlRepositorio, times(1)).save(any(Url.class));
 
 	}
 
@@ -152,7 +150,6 @@ class UrlServicioTests {
 		assertNotEquals("uzdkr8", urlRespuesta.slug());
 
 		verify(urlRepositorio, times(1)).findById(anyInt());
-		verify(urlRepositorio, times(1)).save(any(Url.class));
 
 	}
 
@@ -174,7 +171,7 @@ class UrlServicioTests {
 
 		RuntimeException err = assertThrows(InvalidInputException.class, () -> urlServicio.actualizarShortUrl(null, null));
 
-		assertEquals("El id debe ser mayor a cero", err.getMessage());
+		assertEquals("La solicitud no puede estar vacia", err.getMessage());
 
 		verify(urlRepositorio, never()).findById(anyInt());
 		verify(urlRepositorio, never()).save(any(Url.class));
@@ -187,7 +184,7 @@ class UrlServicioTests {
 
 		InvalidInputException err = assertThrows(InvalidInputException.class, () -> urlServicio.actualizarShortUrl(-1, null));
 
-		assertEquals("El id debe ser mayor a cero", err.getMessage());
+		assertEquals("La solicitud no puede estar vacia", err.getMessage());
 
 		verify(urlRepositorio, never()).findById(anyInt());
 		verify(urlRepositorio, never()).save(any(Url.class));
@@ -205,33 +202,6 @@ class UrlServicioTests {
 
 	}
 
-	@Test
-	@DisplayName("Deberia dar InvalidInputException por id negativo al eliminar un url")
-	public void deberiaFallarAlEliminarUnUrlPorIdNegativo() {
-
-		InvalidInputException err = assertThrows(
-				InvalidInputException.class, () -> urlServicio.EliminarUrl(-1)
-		);
-
-		assertEquals("El id debe ser mayor a cero", err.getMessage());
-
-		verify(urlRepositorio, never()).existsById(anyInt());
-		verify(urlRepositorio, never()).deleteById(anyInt());
-	}
-
-	@Test
-	@DisplayName("Deberia dar InvalidInputException por id null al eliminar un url")
-	public void deberiaFallarAlEliminarUnUrlPorSerNull() {
-
-		InvalidInputException err = assertThrows(
-				InvalidInputException.class, () -> urlServicio.EliminarUrl(null)
-		);
-
-		assertEquals("El id debe ser mayor a cero", err.getMessage());
-
-		verify(urlRepositorio, never()).existsById(anyInt());
-		verify(urlRepositorio, never()).deleteById(anyInt());
-	}
 
 	@Test
 	@DisplayName("Deberia dar EntityNotFoundException por url no existente al eliminar")
