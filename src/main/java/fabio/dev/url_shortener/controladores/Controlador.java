@@ -48,15 +48,4 @@ public class Controlador {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{slug}/")
-    public ResponseEntity<Void> redericcionar(@PathVariable String slug) {
-
-        String urlOriginal = urlServicio.buscarUrl(slug);
-
-        return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, urlOriginal)
-                .build();
-    }
-
 }
