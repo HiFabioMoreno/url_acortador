@@ -16,7 +16,7 @@ public class ErrorRespuesta {
     private String error;
     private String errorCode;
     private String mensaje;
-    private String mensajeDesarrolador;
+    private String mensajeDesarrollador;
     private String path;
     private List<FieldError> errors;
     private List<ConstraintViolationError> violacionesDeRestricciones;

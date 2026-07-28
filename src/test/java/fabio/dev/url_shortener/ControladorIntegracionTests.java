@@ -73,7 +73,7 @@ public class ControladorIntegracionTests {
     }
 
     @Test
-    @DisplayName("GET /acortador/{slug} - debe de regresar un url encontrado por su slug")
+    @DisplayName("GET /{slug}/ - debe de regresar un url encontrado por su slug")
     void  debe_de_regresar_un_url_encontrado_por_su_slug() throws Exception {
 
         Url url = new Url();
@@ -84,7 +84,7 @@ public class ControladorIntegracionTests {
         url.setVecesAccedido(0);
         urlRepositorio.save(url);
 
-        mockMvc.perform(get("/acortador/" + url.getSlug() + "/")
+        mockMvc.perform(get("/" + url.getSlug() + "/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(url)))
                 .andExpect(status().isFound())
@@ -195,7 +195,7 @@ public class ControladorIntegracionTests {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].originalUrl").value("https://www.google.com"));
 
-        mockMvc.perform(get("/acortador/"+ slugAEncontrar +"/")
+        mockMvc.perform(get("/"+ slugAEncontrar +"/")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", "https://www.google.com"));
