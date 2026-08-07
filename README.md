@@ -1,4 +1,4 @@
-# Acortador URL ![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?logo=springboot) ![Status](https://img.shields.io/badge/status-active-brightgreen)
+# Acortador URL ![Java](https://img.shields.io/badge/Java-22-orange?logo=openjdk) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.x-6DB33F?logo=springboot) ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
 
 
