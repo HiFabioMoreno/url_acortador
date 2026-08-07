@@ -33,7 +33,7 @@ public class GlobalControllerExceptionHandler {
                     .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                     .errorCode(String.valueOf(ErrorCodes.URL_NO_VALIDA))
                     .mensaje(ex.getMessage())
-                    .mensajeDesarrolador("Url no valida para procesar: " + ex.getMessage())
+                    .mensajeDesarrollador("Url no valida para procesar: " + ex.getMessage())
                     .path(request.getRequestId())
                     .build();
 
@@ -51,7 +51,7 @@ public class GlobalControllerExceptionHandler {
                 .error(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .errorCode(String.valueOf(ErrorCodes.URL_NO_ENCONTRADA))
                 .mensaje(ex.getMessage())
-                .mensajeDesarrolador("Url ID no existe en la base de datos "+ ex.getMessage())
+                .mensajeDesarrollador("Url ID no existe en la base de datos "+ ex.getMessage())
                 .path(request.getRequestId())
                 .build();
 
@@ -68,7 +68,7 @@ public class GlobalControllerExceptionHandler {
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .errorCode(String.valueOf(ErrorCodes.URL_NO_VALIDA))
                 .mensaje("Solicitud con cuerpo vacío o inválido")
-                .mensajeDesarrolador("El cuerpo de la solicitud es inválido o está vacío")
+                .mensajeDesarrollador("El cuerpo de la solicitud es inválido o está vacío")
                 .path(request.getRequestId())
                 .build();
 
@@ -96,7 +96,7 @@ public class GlobalControllerExceptionHandler {
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .errorCode(String.valueOf(ErrorCodes.VALIDACION_FALLIDA))
                 .mensaje("La validacion fallo para uno o mas campos")
-                .mensajeDesarrolador("La validacion de la solicitud fallo")
+                .mensajeDesarrollador("La validacion de la solicitud fallo")
                 .path(request.getRequestId())
                 .errors(fieldErrors)
                 .build();
@@ -122,7 +122,7 @@ public class GlobalControllerExceptionHandler {
                     .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                     .errorCode(String.valueOf(ErrorCodes.VALIDACION_FALLIDA))
                     .mensaje("Algunos valores ingresados violan restricciones")
-                    .mensajeDesarrolador("Violacion de restricciones, " + ex.getMessage())
+                    .mensajeDesarrollador("Violacion de restricciones, " + ex.getMessage())
                     .path(request.getRequestId())
                     .violacionesDeRestricciones(errors)
                     .build();
@@ -140,7 +140,7 @@ public class GlobalControllerExceptionHandler {
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .errorCode(String.valueOf(ErrorCodes.INTERNAL_SERVER_ERROR))
                 .mensaje("Un error inseprado a sucedido. Estamos trabajando para solucionarlo")
-                .mensajeDesarrolador(ex.getClass().getSimpleName() + ": " + ex.getMessage())
+                .mensajeDesarrollador(ex.getClass().getSimpleName() + ": " + ex.getMessage())
                 .path(request.getRequestId())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
