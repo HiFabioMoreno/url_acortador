@@ -1,10 +1,9 @@
 package fabio.dev.url_shortener;
 
-import fabio.dev.url_shortener.controladores.Controlador;
+import fabio.dev.url_shortener.controladores.UrlControlador;
 import fabio.dev.url_shortener.dtos.ActualizarRespuesta;
 import fabio.dev.url_shortener.dtos.UrlRespuesta;
 import fabio.dev.url_shortener.dtos.UrlSolicitud;
-import fabio.dev.url_shortener.excepciones.InvalidInputException;
 import fabio.dev.url_shortener.modelos.Url;
 import fabio.dev.url_shortener.servicios.UrlServicio;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,14 +19,13 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(Controlador.class)
-public class ControladorTests {
+@WebMvcTest(UrlControlador.class)
+public class UrlControladorTests {
 
     @Autowired
     private MockMvc mockMvc;
